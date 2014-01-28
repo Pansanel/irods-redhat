@@ -1,0 +1,51 @@
+--- a/Makefile
++++ b/Makefile
+@@ -392,7 +392,47 @@
+ 
+ # Install
+ install:
+-	@echo "Please use the irodssetup script to install iRODS"
++	install -d $(DESTDIR)/usr/bin
++	install -d $(DESTDIR)/usr/sbin
++	install -d $(DESTDIR)/$(LIBDIR)/irods/cmd
++	install -d $(DESTDIR)/$(LIBDIR)/irods/rules
++	install -d $(DESTDIR)/$(LIBDIR)/irods/schema
++	install -d $(DESTDIR)/etc/irods/reConfigs
++
++	install server/bin/irods $(DESTDIR)/usr/sbin
++	install server/bin/irodsServer $(DESTDIR)/usr/sbin
++	install server/bin/irodsAgent $(DESTDIR)/usr/sbin
++	install server/bin/irodsReServer $(DESTDIR)/usr/sbin
++	install server/bin/irodsXmsgServer $(DESTDIR)/usr/sbin
++	install server/bin/cmd/* $(DESTDIR)/$(LIBDIR)/irods/cmd
++	install server/bin/PamAuthCheck $(DESTDIR)/$(LIBDIR)/irods
++
++	install -m 644 clients/icommands/bin/*.ir $(DESTDIR)/$(LIBDIR)/irods/rules
++	install -m 644 clients/icommands/bin/*.r $(DESTDIR)/$(LIBDIR)/irods/rules
++	install clients/icommands/bin/i* $(DESTDIR)/usr/bin
++	install clients/icommands/bin/genOSAuth $(DESTDIR)/$(LIBDIR)/irods
++
++	[ -f clients/fuse/bin/irodsFs ] && install clients/fuse/bin/irodsFs $(DESTDIR)/usr/bin
++
++	install -m 644 server/config/connectControl.config.template $(DESTDIR)/etc/irods
++	install -m 644 server/config/dbr.config $(DESTDIR)/etc/irods
++	install -m 644 server/config/HostAccessControl $(DESTDIR)/etc/irods
++	install -m 644 server/config/irodsHost $(DESTDIR)/etc/irods
++	install -m 644 server/config/irodsMonPerf.config.in $(DESTDIR)/etc/irods
++	install -m 644 server/config/rda.config $(DESTDIR)/etc/irods
++	install -m 644 server/config/server.config $(DESTDIR)/etc/irods
++	install -m 644 server/config/server.env.in $(DESTDIR)/etc/irods/server.env
++	install -m 644 server/config/reConfigs/core.re $(DESTDIR)/etc/irods/reConfigs
++	install -m 644 server/config/reConfigs/core.fnm $(DESTDIR)/etc/irods/reConfigs
++	install -m 644 server/config/reConfigs/core.dvm $(DESTDIR)/etc/irods/reConfigs
++
++	install -m 644 server/icat/src/icatCoreTables.sql.pp $(DESTDIR)/$(LIBDIR)/irods/schema
++	install -m 644 server/icat/src/icatSysTables.sql.pp $(DESTDIR)/$(LIBDIR)/irods/schema
++	install -m 644 server/icat/src/icatCoreInserts.sql $(DESTDIR)/$(LIBDIR)/irods/schema
++	install -m 644 server/icat/src/icatSysInserts.sql $(DESTDIR)/$(LIBDIR)/irods/schema
++	install -m 644 server/icat/src/icatDropCoreTables.sql $(DESTDIR)/$(LIBDIR)/irods/schema
++	install -m 644 server/icat/src/icatDropSysTables.sql $(DESTDIR)/$(LIBDIR)/irods/schema
++	install -m 755 server/icat/src/convertSql.pl $(DESTDIR)/$(LIBDIR)/irods/schema
+ 
+ installdirs:
+ 	@true

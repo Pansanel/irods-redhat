@@ -1,0 +1,29 @@
+--- a/lib/core/include/rodsErrorTable.h
++++ b/lib/core/include/rodsErrorTable.h
+@@ -214,6 +214,7 @@
+ #define OBJ_PATH_DOES_NOT_EXIST		-358000
+ #define SYMLINKED_BUNFILE_NOT_ALLOWED	-359000
+ #define USER_INPUT_STRING_ERR           -360000
++#define USER_NOT_ALLOWED_TO_EXEC_CMD	-370000
+ 
+ 
+ /* 500,000 to 800,000 - file driver error */
+--- a/server/api/src/rsExecCmd.c
++++ b/server/api/src/rsExecCmd.c
+@@ -83,6 +83,16 @@
+ 	return (BAD_EXEC_CMD_PATH);
+     }
+ 
++    /* Also check for anonymous.  As an additional safety precaution,
++       by default, do not allow the anonymous user (if defined) to
++       execute commands via rcExecCmd.  If your site needs to allow
++       this for some particular feature, you can remove the
++       following check.
++    */
++    if (strncmp(ANONYMOUS_USER, rsComm->clientUser.userName,NAME_LEN) == 0) {
++	return(USER_NOT_ALLOWED_TO_EXEC_CMD);
++    }
++
+     memset (&addr, 0, sizeof (addr));
+     if (*execCmdInp->hintPath != '\0') {
+ 	dataObjInp_t dataObjInp;

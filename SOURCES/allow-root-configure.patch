@@ -1,0 +1,23 @@
+--- a/scripts/perl/configure.pl
++++ b/scripts/perl/configure.pl
+@@ -147,12 +147,14 @@
+ #
+ setPrintVerbose( 1 );
+ 
+-if ( $thisUserID == 0 )
+-{
+-	printError( "Usage error:\n" );
+-	printError( "    This script should *not* be run as root.\n" );
+-	exit( 1 );
+-}
++# need to remove to allow running with fakeroot when
++# creating the deb package
++#if ( $thisUserID == 0 )
++#{
++#	printError( "Usage error:\n" );
++#	printError( "    This script should *not* be run as root.\n" );
++#	exit( 1 );
++#}
+ 
+ 
+ 

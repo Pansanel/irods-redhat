@@ -1,0 +1,142 @@
+--- /dev/null
++++ b/server/bin/irods
+@@ -0,0 +1,139 @@
++#!/bin/sh
++
++verbose=1
++
++usage()
++{
++  echo "Usage: $0 [-q] [start|stop|restart|status]"
++  exit 3
++}
++
++check_config()
++{
++  if [ -z "$irodsHost" \
++    -o -z "$irodsPort" \
++    -o -z "$irodsZone" \
++    -o -z "$irodsUserName" \
++    -o -z "$irodsAuthFileName" ]; then
++    if [ $verbose = 1 ]; then
++      echo "The following variables must be set in /etc/irods/server.env:"
++      echo "    irodsHost, irodsPort, irodsZone, irodsUserName, irodsAuthFileName"
++    fi
++    exit 3
++ fi
++}
++
++irods_server_pid()
++{
++  if [ ! -f /tmp/irodsServer.$irodsPort ]; then
++    return 0
++  fi
++  pid=`awk '{print $1}' /tmp/irodsServer.$irodsPort`
++  ps --pid $pid > /dev/null 2>&1
++  if [ $? != 0 ]; then
++    return 0
++  else
++    return $pid
++  fi
++}
++
++do_start()
++{
++  ulimit -c unlimited
++  umask 022
++  cd /usr/sbin # irods starts other processes, assuming cwd location
++  out=`/usr/sbin/irodsServer 2>&1`
++  if [ $? != 0 ]; then
++    if [ $verbose = 1 ]; then
++      echo "$0: irodsServer failed to start"
++      echo $out
++    fi
++    exit 2
++  fi
++  # give the server a couple of seconds to start up,
++  # then check to see if it's running
++  sleep 3
++  killall -q -0 irodsServer
++  if [ $? != 0 ]; then
++    if [ $verbose = 1 ]; then
++      echo "$0: irodsServer failed to start. Check logs in /var/log/irods."
++    fi
++    exit 2
++  fi
++}
++
++do_stop()
++{
++  killall -q irodsXmsgServer
++  killall -q irodsReServer
++  killall -q irodsServer
++}
++
++# script logic begins here
++
++if [ $# = 2 ]; then
++  if [ "$1" = '-q' ]; then
++    verbose=0
++  else
++    usage
++  fi
++  action=$2
++elif [ $# = 1 ]; then
++  action=$1
++else
++  usage
++fi
++
++[ -f /etc/irods/server.env ] && . /etc/irods/server.env
++
++check_config
++
++case "$action" in
++  start)
++    irods_server_pid
++    server_pid=$?
++    if [ $server_pid = 0 ]; then
++      do_start
++    else
++      exit 1   # indicate already running
++    fi
++    ;;
++
++  stop)
++    irods_server_pid
++    server_pid=$?
++    if [ $server_pid = 0 ]; then
++      exit 1   # indicate already stopped
++    else
++      do_stop
++    fi
++    ;;
++
++  restart)
++    do_stop
++    do_start
++    ;;
++
++  status)
++    [ $verbose = 1 ] && echo -n "irodsServer is "
++    irods_server_pid
++    server_pid=$?
++    if [ $server_pid = 0 ]; then
++      [ $verbose = 1 ] && echo "not running."
++      exit 1
++    else
++      [ $verbose = 1 ] && echo "running with pid $server_pid."
++    fi
++    if [ $verbose = 1 ]; then
++      ps --no-heading --ppid $server_pid | \
++         awk '{printf "%s is running with pid %d\n", $4, $1}'
++    fi
++    ;;
++
++  *)
++    echo "$0: unknown action $1"
++    exit 3
++esac
++
++exit 0
++
