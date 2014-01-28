@@ -96,7 +96,7 @@ binaries, and can be used to create both an iRODS catalog service
         scripts/configure
         sed -i \
           -e 's|#RODS_CAT=|RODS_CAT=1|' \
-          -e 's|#PSQServer=|PSQICAT=1|' \
+          -e 's|#PSQICAT=|PSQICAT=1|' \
           -e 's|#POSTGRES_HOME=|POSTGRES_HOME=/usr|' \
           -e 's|#NEW_ODBC=|NEW_ODBC=1|' \
           -e 's|# IRODS_FS = 1|IRODS_FS = 1|' \
@@ -109,12 +109,12 @@ binaries, and can be used to create both an iRODS catalog service
           -e 's|# PAM_AUTH = 1|PAM_AUTH = 1|' \
           -e 's|# USE_SSL = 1|USE_SSL = 1|' \
           -e 's|# OS_AUTH = 1|OS_AUTH = 1|' \
-          -e 's|#OS_AUTH_CMD =.*|OS_AUTH_CMD=/usr/lib/irods/genOSAuth|' \
+          -e 's|#OS_AUTH_CMD =.*|OS_AUTH_CMD=%{_libdir}/irods/genOSAuth|' \
           -e 's|#DEF_CONFIG_DIR=.*|DEF_CONFIG_DIR=/etc/irods|' \
           -e 's|#DEF_STATE_DIR=.*|DEF_STATE_DIR=/var/lib/irods|' \
           -e 's|#DEF_LOG_DIR=.*|DEF_LOG_DIR=/var/log/irods|' \
-          -e 's|#CMD_DIR=.*|CMD_DIR=/%{_libdir}/irods/cmd|' \
-          -e 's|#PAM_AUTH_CHECK_PROG=.*|PAM_AUTH_CHECK_PROG=/%{_libdir}/irods/PamAuthCheck|' \
+          -e 's|#CMD_DIR=.*|CMD_DIR=%{_libdir}/irods/cmd|' \
+          -e 's|#PAM_AUTH_CHECK_PROG=.*|PAM_AUTH_CHECK_PROG=%{_libdir}/irods/PamAuthCheck|' \
           -e 's|# STORAGE_ADMIN_ROLE = 1|STORAGE_ADMIN_ROLE = 1|' \
           -e 's|#UNI_CODE=|UNI_CODE=1|' \
           -e 's|# RUN_SERVER_AS_ROOT = 1|RUN_SERVER_AS_ROOT = 1|' \
